@@ -1,0 +1,235 @@
+{
+  "info": {
+    "name": "Microservicios Médicos y Recetas",
+    "description": "Colección para probar el sistema de microservicios con patrón Idempotent Consumer",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Médicos",
+      "item": [
+        {
+          "name": "Crear Médico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_medico\": \"MED-001\",\n  \"numero_licencia\": \"12345-ABC\",\n  \"institucion\": \"Hospital General\",\n  \"ubicacion_consultorio\": \"Piso 3, Consultorio 15\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/medicos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "medicos"]
+            }
+          }
+        },
+        {
+          "name": "Listar Médicos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/api/medicos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "medicos"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Médico por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/api/medicos/MED-001",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "medicos", "MED-001"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Médico",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"institucion\": \"Clínica Santa María\",\n  \"ubicacion_consultorio\": \"Piso 2, Consultorio 10\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/medicos/MED-001",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "medicos", "MED-001"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Médico",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:3000/api/medicos/MED-001",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "medicos", "MED-001"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recetas",
+      "item": [
+        {
+          "name": "Crear Receta (Validada)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_receta\": \"REC-001\",\n  \"id_medico\": \"MED-001\",\n  \"id_paciente\": \"PAC-001\",\n  \"fecha_emision\": \"2025-12-15T10:30:00.000Z\",\n  \"diagnostico\": \"Gripe común\",\n  \"observaciones\": \"Reposo por 3 días\",\n  \"ubicacion_emision\": \"Consultorio 15\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/recetas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "recetas"]
+            }
+          }
+        },
+        {
+          "name": "Crear Receta (Duplicada - Idempotencia)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_receta\": \"REC-001\",\n  \"id_medico\": \"MED-001\",\n  \"id_paciente\": \"PAC-001\",\n  \"fecha_emision\": \"2025-12-15T10:30:00.000Z\",\n  \"diagnostico\": \"Gripe común\",\n  \"observaciones\": \"Reposo por 3 días\",\n  \"ubicacion_emision\": \"Consultorio 15\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/recetas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "recetas"]
+            }
+          }
+        },
+        {
+          "name": "Crear Receta (Médico Inexistente)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_receta\": \"REC-002\",\n  \"id_medico\": \"MED-999\",\n  \"id_paciente\": \"PAC-002\",\n  \"fecha_emision\": \"2025-12-15T11:00:00.000Z\",\n  \"diagnostico\": \"Fiebre\",\n  \"observaciones\": \"Control en 2 días\",\n  \"ubicacion_emision\": \"Consultorio 20\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/recetas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "recetas"]
+            }
+          }
+        },
+        {
+          "name": "Listar Recetas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/api/recetas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "recetas"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Receta por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/api/recetas/REC-001",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "recetas", "REC-001"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Receta",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"Reposo extendido a 5 días. Control el día 5.\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/recetas/REC-001",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "recetas", "REC-001"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Receta",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:3000/api/recetas/REC-001",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "recetas", "REC-001"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

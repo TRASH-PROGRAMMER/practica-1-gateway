@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  # RabbitMQ - Message Broker
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: medical_rabbitmq
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - medical_network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # PostgreSQL para Microservicio Médico
+  postgres_medico:
+    image: postgres:16-alpine
+    container_name: medical_postgres_medico
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: medico_db
+    volumes:
+      - postgres_medico_data:/var/lib/postgresql/data
+    networks:
+      - medical_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL para Microservicio Receta
+  postgres_receta:
+    image: postgres:16-alpine
+    container_name: medical_postgres_receta
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: receta_db
+    volumes:
+      - postgres_receta_data:/var/lib/postgresql/data
+    networks:
+      - medical_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis para Idempotencia
+  redis:
+    image: redis:7-alpine
+    container_name: medical_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - medical_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Adminer - Database Management UI (Opcional)
+  adminer:
+    image: adminer:latest
+    container_name: medical_adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - medical_network
+    depends_on:
+      - postgres_medico
+      - postgres_receta
+
+networks:
+  medical_network:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
+  postgres_medico_data:
+  postgres_receta_data:
+  redis_data:
